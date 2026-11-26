@@ -12,7 +12,7 @@ app = FastAPI(title="TestPortal API")
 DbSession = Annotated[Session, Depends(get_db)]
 
 
-@app.get("/health")
+@app.get("/api/health")
 def health(db: DbSession) -> dict[str, str]:
     try:
         db.execute(text("select 1"))
