@@ -22,8 +22,10 @@ def health(db: DbSession) -> dict[str, str]:
 
 from backend.modules.auth.router import router as auth_router
 from backend.modules.roles.router import router as roles_router
+from backend.modules.groups.router import router as groups_router
 from backend.modules.users.router import router as users_router
 app.include_router(auth_router)
 app.include_router(roles_router)
 app.include_router(users_router)
+app.include_router(groups_router)
 

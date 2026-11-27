@@ -122,3 +122,24 @@
 - Эндпоинты создания, просмотра и назначения ролей защищены `roles.manage`.
 - Эндпоинты создания, просмотра и назначения прав защищены `permissions.manage`.
 - Проверено: запросы с токеном администратора возвращают данные; запрос без токена возвращает `401`.
+## 2026-11-27 — Модуль групп
+
+- Добавлен модуль `groups`: модель `Group`, связь `group_members`, CRUD и API.
+- Добавлены миграции:
+  - `f642520aaf9d` — пустая автогенерация, оставлена в истории;
+  - `66102e07ee9e` — пустая автогенерация, оставлена в истории;
+  - `acd4050df6c8` — создаёт таблицы `groups` и `group_members`.
+- Исправлен `backend/migrations/env.py`: добавлен импорт `backend.modules.groups.models`, чтобы Alembic видел модели групп.
+- Удалён пустой артефакт первоначального каркаса `backend/app`.
+- Добавлено право `groups.manage` и назначено роли `Administrator`.
+- API групп защищён правом `groups.manage`.
+- Проверены endpoints:
+  - `GET /api/groups` — 200;
+  - `POST /api/groups` — 201;
+  - `GET /api/groups/{id}` — доступен;
+  - `PATCH /api/groups/{id}` — доступен;
+  - `DELETE /api/groups/{id}` — мягкое удаление;
+  - `GET /api/groups/{id}/members` — 200;
+  - `POST /api/groups/{id}/members/{user_id}` — 200;
+  - `DELETE /api/groups/{id}/members/{user_id}` — 200.
+- Создана тестовая группа `Test Group`; добавление и удаление пользователя id 1 проверены.

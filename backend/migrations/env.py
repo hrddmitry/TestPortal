@@ -9,6 +9,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 from backend.config import settings  # noqa: E402
 from backend.core.database import Base  # noqa: E402
+import backend.modules.groups.models  # noqa: E402,F401
 import backend.modules.users.models  # noqa: E402,F401
 
 config = context.config
