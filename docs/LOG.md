@@ -59,3 +59,9 @@
 - В `pyproject.toml` настроен контракт `Core does not depend on modules`.
 - Проверка `uv run lint-imports pyproject.toml` пройдена: `Contracts: 1 kept, 0 broken`.
 - Коммит: `ca5b3ae` — Add Import Linter with core independence contract.
+## 2026-11-27 — Проверка проекта и решение по пользователям
+
+- Проверка Import Linter пройдена: `Contracts: 1 kept, 0 broken`.
+- База на ревизии `ceefb983f82b (head)`.
+- Сервер запущен, `/api/health` возвращает `ok ok`.
+- Решено: пользователи создаются администратором; саморегистрация и приглашения на старте не нужны, но могут быть добавлены позже.
