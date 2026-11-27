@@ -1,9 +1,10 @@
 from datetime import date, datetime
 
 from sqlalchemy import Date, DateTime, String, Text, func
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from backend.core.database import Base
+from backend.modules.roles.models import Permission, Role, user_permissions, user_roles
 
 
 class User(Base):
@@ -65,3 +66,15 @@ class User(Base):
         DateTime(timezone=True),
         comment="Когда пользователь мягко удалён; NULL, если активен",
     )
+
+
+User.roles = relationship(
+    Role,
+    secondary=user_roles,
+    back_populates="users",
+)
+User.permissions = relationship(
+    Permission,
+    secondary=user_permissions,
+    back_populates="users",
+)
