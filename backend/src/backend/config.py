@@ -18,6 +18,10 @@ class Settings(BaseSettings):
     postgres_host: str = "127.0.0.1"
     postgres_port: int = 5432
 
+    secret_key: str = "change-me-in-production"
+    algorithm: str = "HS256"
+    access_token_expire_minutes: int = 30
+
     @property
     def database_url(self) -> URL:
         return URL.create(

@@ -3,7 +3,8 @@ from sqlalchemy.orm import Session
 
 from backend.core.database import get_db
 from backend.modules.users import crud
-from backend.modules.users.schemas import UserCreate, UserRead
+from backend.modules.auth.security import hash_password
+from backend.modules.users.schemas import SetPasswordRequest, UserCreate, UserRead
 
 router = APIRouter(prefix="/api/users", tags=["users"])
 
@@ -24,3 +25,17 @@ def get_user(user_id: int, db: Session = Depends(get_db)) -> UserRead:
     if user is None:
         raise HTTPException(status_code=404, detail="User not found")
     return user
+
+@router.put("/{user_id}/password")
+def set_password(
+    user_id: int,
+    payload: SetPasswordRequest,
+    db: Session = Depends(get_db),
+) -> dict[str, bool]:
+    user = crud.get_user(db, user_id)
+    if user is None:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    user.password_hash = hash_password(payload.password)
+    db.commit()
+    return {"ok": True}

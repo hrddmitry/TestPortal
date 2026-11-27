@@ -1,4 +1,4 @@
-﻿from typing import Annotated
+from typing import Annotated
 
 from fastapi import Depends, FastAPI, HTTPException
 from sqlalchemy import text
@@ -20,6 +20,8 @@ def health(db: DbSession) -> dict[str, str]:
         raise HTTPException(status_code=503, detail="Database unavailable")
     return {"status": "ok", "database": "ok"}
 
+from backend.modules.auth.router import router as auth_router
 from backend.modules.users.router import router as users_router
+app.include_router(auth_router)
 app.include_router(users_router)
 

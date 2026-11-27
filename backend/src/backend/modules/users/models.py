@@ -1,4 +1,4 @@
-﻿from datetime import date, datetime
+from datetime import date, datetime
 
 from sqlalchemy import Date, DateTime, String, Text, func
 from sqlalchemy.orm import Mapped, mapped_column
@@ -13,6 +13,8 @@ class User(Base):
     id: Mapped[int] = mapped_column(
         primary_key=True, comment="Идентификатор пользователя"
     )
+    password_hash: Mapped[str]
+
     email: Mapped[str] = mapped_column(
         String(255),
         unique=True,
