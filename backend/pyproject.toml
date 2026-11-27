@@ -22,3 +22,16 @@ backend = "backend:main"
 [build-system]
 requires = ["uv_build>=0.13.10,<0.14.0"]
 build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "import-linter>=2.17",
+]
+[tool.importlinter]
+root_packages = ["backend"]
+
+[[tool.importlinter.contracts]]
+name = "Core does not depend on modules"
+type = "forbidden"
+source_modules = ["backend.core"]
+forbidden_modules = ["backend.modules"]
