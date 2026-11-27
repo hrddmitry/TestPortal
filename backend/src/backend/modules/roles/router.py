@@ -1,9 +1,11 @@
-﻿from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
 from backend.core.database import get_db
+from backend.modules.auth.permissions import require_permission
 from backend.modules.roles import crud
 from backend.modules.roles.models import Permission, Role
+from backend.modules.users.models import User
 from backend.modules.roles.schemas import (
     PermissionCreate,
     PermissionRead,
@@ -15,12 +17,19 @@ router = APIRouter(prefix="/api", tags=["roles"])
 
 
 @router.post("/roles", response_model=RoleRead, status_code=201)
-def create_role(data: RoleCreate, db: Session = Depends(get_db)) -> Role:
+def create_role(
+    data: RoleCreate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_permission("roles.manage")),
+) -> Role:
     return crud.create_role(db, data)
 
 
 @router.get("/roles", response_model=list[RoleRead])
-def list_roles(db: Session = Depends(get_db)) -> list[Role]:
+def list_roles(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_permission("roles.manage")),
+) -> list[Role]:
     return crud.list_roles(db)
 
 
@@ -28,12 +37,16 @@ def list_roles(db: Session = Depends(get_db)) -> list[Role]:
 def create_permission(
     data: PermissionCreate,
     db: Session = Depends(get_db),
+    current_user: User = Depends(require_permission("permissions.manage")),
 ) -> Permission:
     return crud.create_permission(db, data)
 
 
 @router.get("/permissions", response_model=list[PermissionRead])
-def list_permissions(db: Session = Depends(get_db)) -> list[Permission]:
+def list_permissions(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_permission("permissions.manage")),
+) -> list[Permission]:
     return crud.list_permissions(db)
 
 
@@ -42,6 +55,7 @@ def add_permission_to_role(
     role_id: int,
     permission_id: int,
     db: Session = Depends(get_db),
+    current_user: User = Depends(require_permission("roles.manage")),
 ) -> Role:
     role = crud.get_role(db, role_id)
     if role is None:
@@ -64,9 +78,8 @@ def assign_role_to_user(
     user_id: int,
     role_id: int,
     db: Session = Depends(get_db),
+    current_user: User = Depends(require_permission("roles.manage")),
 ) -> Role:
-    from backend.modules.users.models import User
-
     user = db.get(User, user_id)
     if user is None:
         raise HTTPException(status_code=404, detail="User not found")
@@ -88,9 +101,8 @@ def assign_permission_to_user(
     user_id: int,
     permission_id: int,
     db: Session = Depends(get_db),
+    current_user: User = Depends(require_permission("permissions.manage")),
 ) -> Permission:
-    from backend.modules.users.models import User
-
     user = db.get(User, user_id)
     if user is None:
         raise HTTPException(status_code=404, detail="User not found")
