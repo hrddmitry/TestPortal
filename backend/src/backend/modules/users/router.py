@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 
 from backend.core.database import get_db
 from backend.modules.users import crud
+from backend.modules.auth.permissions import require_permission
 from backend.modules.auth.security import hash_password
 from backend.modules.users.schemas import SetPasswordRequest, UserCreate, UserRead
 
@@ -10,12 +11,19 @@ router = APIRouter(prefix="/api/users", tags=["users"])
 
 
 @router.post("", response_model=UserRead, status_code=201)
-def create_user(data: UserCreate, db: Session = Depends(get_db)) -> UserRead:
+def create_user(
+    data: UserCreate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_permission("users.manage")),
+) -> UserRead:
     return crud.create_user(db, data)
 
 
 @router.get("", response_model=list[UserRead])
-def list_users(db: Session = Depends(get_db)) -> list[UserRead]:
+def list_users(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_permission("users.manage")),
+) -> list[UserRead]:
     return crud.list_users(db)
 
 
