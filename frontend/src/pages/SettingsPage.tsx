@@ -1,4 +1,4 @@
-﻿import { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { apiRequest } from "../api";
 import type { Permission, Role, User } from "../types";
 
@@ -134,7 +134,8 @@ export default function SettingsPage() {
           <ul className="list">
             {permissions.map((p) => (
               <li key={p.id}>
-                <code>{p.code}</code> — {p.name}
+                <strong>{p.name}</strong>
+                {p.description ? ` — ${p.description}` : ""}
               </li>
             ))}
           </ul>
@@ -155,7 +156,7 @@ export default function SettingsPage() {
               <select value={permId} onChange={(e) => setPermId(e.target.value)}>
                 <option value="">Право</option>
                 {permissions.map((p) => (
-                  <option key={p.id} value={p.id}>{p.code}</option>
+                  <option key={p.id} value={p.id}>{p.name}</option>
                 ))}
               </select>
               <button className="primary" disabled={!roleId || !permId} onClick={assignPermission}>

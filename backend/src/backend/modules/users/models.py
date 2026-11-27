@@ -14,8 +14,7 @@ class User(Base):
     id: Mapped[int] = mapped_column(
         primary_key=True, comment="Идентификатор пользователя"
     )
-    password_hash: Mapped[str]
-
+    password_hash: Mapped[str] = mapped_column(comment="Хеш пароля")
     email: Mapped[str] = mapped_column(
         String(255),
         unique=True,
@@ -42,9 +41,6 @@ class User(Base):
     )
     about: Mapped[str | None] = mapped_column(
         Text, comment="Информация о себе"
-    )
-    signature: Mapped[str | None] = mapped_column(
-        String(500), comment="Подпись"
     )
     hired_at: Mapped[date | None] = mapped_column(
         Date, comment="Дата начала работы в компании"

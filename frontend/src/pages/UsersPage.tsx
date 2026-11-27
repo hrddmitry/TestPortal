@@ -86,6 +86,7 @@ export default function UsersPage() {
         <h2>Коллеги</h2>
         {error && <p className="error">{error}</p>}
         {info && <p className="muted">{info}</p>}
+        <p className={form.password.length > 0 && form.password.length < 8 ? "error" : "muted"}>Пароль нового пользователя — не менее 8 символов.</p>
 
         <div className="row">
           <input placeholder="Email" value={form.email} onChange={set("email")} />
@@ -135,6 +136,7 @@ export default function UsersPage() {
             <p>Дата рождения: {selected.birthday ?? "—"}</p>
             <p>Дата приёма: {selected.hired_at ?? "—"}</p>
             <p>О себе: {selected.about ?? "—"}</p>
+            <p className={newPassword.length > 0 && newPassword.length < 8 ? "error" : "muted"}>Новый пароль — не менее 8 символов.</p>
             <div className="row">
               <input
                 type="password"

@@ -12,7 +12,6 @@ class UserCreate(BaseModel):
     location: str | None = None
     phone: str | None = None
     about: str | None = None
-    signature: str | None = None
     hired_at: date | None = None
     is_active: bool = True
     password: str = Field(min_length=8)
@@ -35,7 +34,6 @@ class UserRead(BaseModel):
     location: str | None
     phone: str | None
     about: str | None
-    signature: str | None
     hired_at: date | None
     is_active: bool
     created_at: datetime

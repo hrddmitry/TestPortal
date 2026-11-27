@@ -35,3 +35,4 @@ main { padding: 0 24px 24px; }
 .tabs { display: flex; gap: 8px; margin-bottom: 16px; }
 .tab.active { background: #2b4a9c; border-color: #2b4a9c; color: #fff; }
 select { font: inherit; border-radius: 10px; border: 1px solid #4a4e5a; padding: 8px 12px; background: #20222d; color: inherit; flex: 1; min-width: 140px; }
+textarea { font: inherit; width: 100%; border-radius: 10px; border: 1px solid #4a4e5a; padding: 8px 12px; background: #20222d; color: inherit; resize: vertical; }

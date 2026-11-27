@@ -1,4 +1,4 @@
-from datetime import datetime
+﻿from datetime import datetime
 
 from sqlalchemy import Column, DateTime, ForeignKey, Integer, String, Table, Text, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -15,12 +15,14 @@ group_members = Table(
         Integer,
         ForeignKey("groups.id", ondelete="CASCADE"),
         primary_key=True,
+        comment="Группа",
     ),
     Column(
         "user_id",
         Integer,
         ForeignKey("users.id", ondelete="CASCADE"),
         primary_key=True,
+        comment="Пользователь",
     ),
     Column(
         "added_at",
@@ -28,6 +30,7 @@ group_members = Table(
         server_default=func.now(),
         comment="Когда пользователь добавлен в группу",
     ),
+    comment="Участники групп",
 )
 
 
@@ -35,7 +38,10 @@ class Group(Base):
     __tablename__ = "groups"
     __table_args__ = {"comment": "Группы пользователей"}
 
-    id: Mapped[int] = mapped_column(primary_key=True)
+    id: Mapped[int] = mapped_column(
+        primary_key=True,
+        comment="Идентификатор группы",
+    )
     name: Mapped[str] = mapped_column(
         String(255),
         unique=True,

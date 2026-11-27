@@ -1,4 +1,4 @@
-﻿export interface Group {
+export interface Group {
   id: number;
   name: string;
   description: string | null;
@@ -41,10 +41,27 @@ export interface User {
   location: string | null;
   phone: string | null;
   about: string | null;
-  signature: string | null;
   hired_at: string | null;
   is_active: boolean;
   created_at: string;
   updated_at: string | null;
   deleted_at: string | null;
+}
+
+export interface Profile {
+  id: number;
+  email: string;
+  first_name: string | null;
+  last_name: string | null;
+  avatar: string | null;
+  birthday: string | null;
+  location: string | null;
+  phone: string | null;
+  about: string | null;
+  hired_at: string | null;
+  is_active: boolean;
+  roles: string[];
+  permissions: string[];
+  permission_names: string[];
+  groups: string[];
 }

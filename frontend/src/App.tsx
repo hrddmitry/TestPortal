@@ -1,39 +1,68 @@
-import { useState } from "react";
-import { apiRequest, setAccessToken } from "./api";
+import { useEffect, useState } from "react";
+import {
+  apiRequest,
+  getAccessToken,
+  setAccessToken,
+  setUnauthorizedHandler,
+} from "./api";
 import { MENU, SETTINGS_ITEM } from "./menu";
 import type { MenuItem } from "./menu";
-import type { LoginResponse } from "./types";
+import type { LoginResponse, Profile } from "./types";
 import ComingSoon from "./pages/ComingSoon";
 import GroupsPage from "./pages/GroupsPage";
+import ProfilePage from "./pages/ProfilePage";
 import SettingsPage from "./pages/SettingsPage";
 import UsersPage from "./pages/UsersPage";
 
+const PAGE_KEY = "testportal_page";
+
 export default function App() {
-  const [email, setEmail] = useState("test@example.com");
+  const [email, setEmail] = useState(() => localStorage.getItem("testportal_login_email") ?? "");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const [loggedIn, setLoggedIn] = useState(false);
-  const [isAdmin, setIsAdmin] = useState(false);
-  const [page, setPage] = useState("groups");
+  const [restoring, setRestoring] = useState(() => getAccessToken() !== null);
+  const [profile, setProfile] = useState<Profile | null>(null);
+  const [page, setPageState] = useState(
+    () => sessionStorage.getItem(PAGE_KEY) ?? "groups",
+  );
+
+  function setPage(next: string) {
+    sessionStorage.setItem(PAGE_KEY, next);
+    setPageState(next);
+  }
+
+  useEffect(() => {
+    setUnauthorizedHandler(() => {
+      setProfile(null);
+      setError("Сессия истекла. Войдите снова.");
+    });
+    return () => setUnauthorizedHandler(null);
+  }, []);
+
+  useEffect(() => {
+    if (getAccessToken() === null) {
+      return;
+    }
+    apiRequest<Profile>("/api/auth/me")
+      .then(setProfile)
+      .catch(() => setAccessToken(null))
+      .finally(() => setRestoring(false));
+  }, []);
 
   async function login() {
     setLoading(true);
     setError(null);
+    setAccessToken(null);
     try {
       const response = await apiRequest<LoginResponse>("/api/auth/login", {
         method: "POST",
         body: JSON.stringify({ email, password }),
       });
       setAccessToken(response.access_token);
-      try {
-        await apiRequest("/api/roles");
-        setIsAdmin(true);
-      } catch {
-        setIsAdmin(false);
-      }
-      setLoggedIn(true);
+      setProfile(await apiRequest<Profile>("/api/auth/me"));
     } catch (e) {
+      setAccessToken(null);
       setError(e instanceof Error ? e.message : "Не удалось войти");
     } finally {
       setLoading(false);
@@ -42,13 +71,21 @@ export default function App() {
 
   function logout() {
     setAccessToken(null);
-    setLoggedIn(false);
-    setIsAdmin(false);
+    sessionStorage.removeItem(PAGE_KEY);
+    setProfile(null);
     setPassword("");
-    setPage("groups");
+    setPageState("groups");
   }
 
-  if (!loggedIn) {
+  if (restoring) {
+    return (
+      <div className="login">
+        <p className="muted">Загрузка...</p>
+      </div>
+    );
+  }
+
+  if (!profile) {
     return (
       <div className="login">
         <div className="card">
@@ -70,10 +107,17 @@ export default function App() {
     );
   }
 
+  const isAdmin = profile.permissions.includes("roles.manage");
+  const displayName =
+    [profile.first_name, profile.last_name].filter(Boolean).join(" ") || profile.email;
   const allItems: MenuItem[] = [...MENU.flatMap((s) => s.items), SETTINGS_ITEM];
   const current = allItems.find((i) => i.key === page);
+  const title = page === "profile" ? "Профиль" : current?.label;
 
   function renderPage() {
+    if (page === "profile" && profile) {
+      return <ProfilePage profile={profile} onUpdated={setProfile} />;
+    }
     if (page === "groups") return <GroupsPage />;
     if (page === "colleagues") return <UsersPage />;
     if (page === "settings" && isAdmin) return <SettingsPage />;
@@ -112,8 +156,11 @@ export default function App() {
 
       <div className="content">
         <header className="topbar">
-          <h1>{current?.label}</h1>
-          <button onClick={logout}>Выйти</button>
+          <h1>{title}</h1>
+          <div className="row" style={{ margin: 0 }}>
+            <button onClick={() => setPage("profile")}>{displayName}</button>
+            <button onClick={logout}>Выйти</button>
+          </div>
         </header>
         <main>{renderPage()}</main>
       </div>

@@ -14,13 +14,16 @@ role_permissions = Table(
         Integer,
         ForeignKey("roles.id", ondelete="CASCADE"),
         primary_key=True,
+        comment="Роль",
     ),
     Column(
         "permission_id",
         Integer,
         ForeignKey("permissions.id", ondelete="CASCADE"),
         primary_key=True,
+        comment="Право",
     ),
+    comment="Права, назначенные ролям",
 )
 
 user_roles = Table(
@@ -31,13 +34,16 @@ user_roles = Table(
         Integer,
         ForeignKey("users.id", ondelete="CASCADE"),
         primary_key=True,
+        comment="Пользователь",
     ),
     Column(
         "role_id",
         Integer,
         ForeignKey("roles.id", ondelete="CASCADE"),
         primary_key=True,
+        comment="Роль",
     ),
+    comment="Роли, назначенные пользователям",
 )
 
 user_permissions = Table(
@@ -48,13 +54,16 @@ user_permissions = Table(
         Integer,
         ForeignKey("users.id", ondelete="CASCADE"),
         primary_key=True,
+        comment="Пользователь",
     ),
     Column(
         "permission_id",
         Integer,
         ForeignKey("permissions.id", ondelete="CASCADE"),
         primary_key=True,
+        comment="Право",
     ),
+    comment="Права, назначенные пользователям напрямую",
 )
 
 
@@ -62,7 +71,10 @@ class Role(Base):
     __tablename__ = "roles"
     __table_args__ = {"comment": "Роли пользователей"}
 
-    id: Mapped[int] = mapped_column(primary_key=True)
+    id: Mapped[int] = mapped_column(
+        primary_key=True,
+        comment="Идентификатор роли",
+    )
     name: Mapped[str] = mapped_column(
         String(100),
         unique=True,
@@ -76,6 +88,7 @@ class Role(Base):
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
         server_default=func.now(),
+        comment="Когда создана роль",
     )
 
     permissions = relationship(
@@ -94,12 +107,15 @@ class Permission(Base):
     __tablename__ = "permissions"
     __table_args__ = {"comment": "Права доступа"}
 
-    id: Mapped[int] = mapped_column(primary_key=True)
+    id: Mapped[int] = mapped_column(
+        primary_key=True,
+        comment="Идентификатор права",
+    )
     code: Mapped[str] = mapped_column(
         String(100),
         unique=True,
         index=True,
-        comment="Машинный код права, например users.read",
+        comment="Машинный код права, например users.manage",
     )
     name: Mapped[str] = mapped_column(
         String(255),
@@ -112,6 +128,7 @@ class Permission(Base):
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
         server_default=func.now(),
+        comment="Когда создано право",
     )
 
     roles = relationship(
