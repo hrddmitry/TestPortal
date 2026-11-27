@@ -15,6 +15,7 @@ class UserCreate(BaseModel):
     signature: str | None = None
     hired_at: date | None = None
     is_active: bool = True
+    password: str = Field(min_length=8)
 
     @field_validator("email")
     @classmethod

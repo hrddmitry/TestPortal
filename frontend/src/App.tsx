@@ -1,4 +1,4 @@
-﻿import { useState } from "react";
+import { useState } from "react";
 import { apiRequest, setAccessToken } from "./api";
 import { MENU, SETTINGS_ITEM } from "./menu";
 import type { MenuItem } from "./menu";
@@ -6,6 +6,7 @@ import type { LoginResponse } from "./types";
 import ComingSoon from "./pages/ComingSoon";
 import GroupsPage from "./pages/GroupsPage";
 import SettingsPage from "./pages/SettingsPage";
+import UsersPage from "./pages/UsersPage";
 
 export default function App() {
   const [email, setEmail] = useState("test@example.com");
@@ -74,6 +75,7 @@ export default function App() {
 
   function renderPage() {
     if (page === "groups") return <GroupsPage />;
+    if (page === "colleagues") return <UsersPage />;
     if (page === "settings" && isAdmin) return <SettingsPage />;
     return <ComingSoon title={current?.label ?? "Раздел"} />;
   }

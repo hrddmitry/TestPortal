@@ -1,9 +1,13 @@
 ﻿import { useEffect, useState } from "react";
 import { apiRequest } from "../api";
-import type { Group, Member } from "../types";
+import type { Group, Member, User } from "../types";
+
+const memberName = (m: { first_name: string | null; last_name: string | null; email: string }) =>
+  [m.last_name, m.first_name].filter(Boolean).join(" ") || m.email;
 
 export default function GroupsPage() {
   const [groups, setGroups] = useState<Group[]>([]);
+  const [users, setUsers] = useState<User[]>([]);
   const [selected, setSelected] = useState<Group | null>(null);
   const [members, setMembers] = useState<Member[]>([]);
   const [name, setName] = useState("");
@@ -26,12 +30,20 @@ export default function GroupsPage() {
 
   async function loadMembers(group: Group) {
     setSelected(group);
+    setUserId("");
     setMembers(await apiRequest<Member[]>(`/api/groups/${group.id}/members`));
   }
 
   useEffect(() => {
-    run(loadGroups);
+    run(async () => {
+      await loadGroups();
+      setUsers(await apiRequest<User[]>("/api/users"));
+    });
   }, []);
+
+  const candidates = users.filter(
+    (u) => u.is_active && !members.some((m) => m.id === u.id),
+  );
 
   const createGroup = () =>
     run(async () => {
@@ -56,7 +68,7 @@ export default function GroupsPage() {
 
   const addMember = () =>
     run(async () => {
-      if (!selected) return;
+      if (!selected || !userId) return;
       setMembers(
         await apiRequest<Member[]>(
           `/api/groups/${selected.id}/members/${Number(userId)}`,
@@ -84,11 +96,7 @@ export default function GroupsPage() {
         {error && <p className="error">{error}</p>}
 
         <div className="row">
-          <input
-            placeholder="Название"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-          />
+          <input placeholder="Название" value={name} onChange={(e) => setName(e.target.value)} />
           <input
             placeholder="Описание"
             value={description}
@@ -123,12 +131,15 @@ export default function GroupsPage() {
         ) : (
           <>
             <div className="row">
-              <input
-                placeholder="ID пользователя"
-                value={userId}
-                onChange={(e) => setUserId(e.target.value)}
-              />
-              <button className="primary" disabled={!userId.trim()} onClick={addMember}>
+              <select value={userId} onChange={(e) => setUserId(e.target.value)}>
+                <option value="">Выберите коллегу</option>
+                {candidates.map((u) => (
+                  <option key={u.id} value={u.id}>
+                    {memberName(u)} — {u.email}
+                  </option>
+                ))}
+              </select>
+              <button className="primary" disabled={!userId} onClick={addMember}>
                 Добавить участника
               </button>
             </div>
@@ -139,7 +150,7 @@ export default function GroupsPage() {
                 {members.map((m) => (
                   <li key={m.id}>
                     <span className="grow">
-                      #{m.id} {m.email}
+                      <strong>{memberName(m)}</strong> — {m.email}
                     </span>
                     <button onClick={() => removeMember(m)}>Убрать</button>
                   </li>

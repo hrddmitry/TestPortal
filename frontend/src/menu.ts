@@ -1,4 +1,4 @@
-﻿export interface MenuItem {
+export interface MenuItem {
   key: string;
   label: string;
   ready?: boolean;
@@ -13,7 +13,7 @@ export const MENU: MenuSection[] = [
   {
     items: [
       { key: "site", label: "Наш сайт" },
-      { key: "colleagues", label: "Коллеги" },
+      { key: "colleagues", label: "Коллеги", ready: true },
     ],
   },
   {

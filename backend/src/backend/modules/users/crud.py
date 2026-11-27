@@ -1,6 +1,7 @@
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
+from backend.modules.auth.security import hash_password
 from backend.modules.users.models import User
 from backend.modules.users.schemas import UserCreate
 
@@ -18,6 +19,7 @@ def create_user(db: Session, data: UserCreate) -> User:
         signature=data.signature,
         hired_at=data.hired_at,
         is_active=data.is_active,
+        password_hash=hash_password(data.password),
     )
     db.add(user)
     db.commit()
