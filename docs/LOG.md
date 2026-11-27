@@ -33,3 +33,14 @@
 ## 26.11.2026 вЂ” С‚РµРєСѓС‰РёР№ С€Р°Рі (РІ РїСЂРѕС†РµСЃСЃРµ, РЅРµ Р·Р°РєРѕРјРјРёС‡РµРЅ)
 - Р­С‚Р°Рї 1, РїРµСЂРµСЃС‚СЂРѕР№РєР° РїРѕРґ РјРѕРґСѓР»Рё: РѕС‚РєР°С‚ Р±Р°Р·С‹ (`alembic downgrade base`), СѓРґР°Р»РµРЅРёРµ СЃС‚Р°СЂРѕР№ РјРёРіСЂР°С†РёРё `bdccf003696b`, РїРµСЂРµРЅРѕСЃ `config.py` Рё `database.py` РІ `core/` (РІ `config.py` РїСѓС‚СЊ Рє РєРѕСЂРЅСЋ СЃС‚Р°РЅРѕРІРёС‚СЃСЏ `parents[4]`), РЅРѕРІР°СЏ `modules/users/models.py`, `public_api.py`, `MODULE.md`, РѕР±РЅРѕРІР»РµРЅРёРµ РёРјРїРѕСЂС‚РѕРІ РІ `main.py` Рё `migrations/env.py`.
 - Р”Р°Р»СЊС€Рµ: Import Linter, РіРµРЅРµСЂР°С†РёСЏ Рё РїСЂРѕРІРµСЂРєР° РЅРѕРІРѕР№ РЅР°С‡Р°Р»СЊРЅРѕР№ РјРёРіСЂР°С†РёРё, РєРѕРјРјРёС‚.
+
+## 2026-11-27 — Перестройка backend
+
+- Созданы папки core, modules, modules/users.
+- database.py перенесён в core, models.py — в modules/users.
+- Созданы __init__.py для новых пакетов.
+- Обновлены импорты в main.py, models.py, migrations/env.py.
+- Старая миграция удалена, создана новая 33b55971c2ce_create_users_table.py.
+- Миграция применена, база на ревизии 33b55971c2ce (head).
+- Приложение запускается, /api/health возвращает ok ok.
+- Коммит: 1cbfb6e — Restructure backend into core and users module.
