@@ -5,7 +5,7 @@ from sqlalchemy import text
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 
-from backend.database import get_db
+from backend.core.database import get_db
 
 app = FastAPI(title="TestPortal API")
 

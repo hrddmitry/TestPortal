@@ -8,8 +8,8 @@ from sqlalchemy import create_engine, pool
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 from backend.config import settings  # noqa: E402
-from backend.database import Base  # noqa: E402
-import backend.models  # noqa: E402,F401
+from backend.core.database import Base  # noqa: E402
+import backend.modules.users.models  # noqa: E402,F401
 
 config = context.config
 
