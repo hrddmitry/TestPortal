@@ -45,7 +45,6 @@
 - Приложение запускается, /api/health возвращает ok ok.
 - Коммит: 1cbfb6e — Restructure backend into core and users module.
 
-## 2026-11-27 — 
 ## 2026-11-27 — Поля пользователя и комментарии в БД
 
 - Расширена модель `users`: добавлены `first_name`, `last_name`, `avatar`, `birthday`, `location`, `phone`, `about`, `signature`, `hired_at`, `is_active`, `updated_at`, `deleted_at`.
