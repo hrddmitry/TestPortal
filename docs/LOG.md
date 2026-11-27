@@ -52,3 +52,10 @@
 - Создана и применена миграция `ceefb983f82b_add_user_profile_fields`.
 - База на ревизии `ceefb983f82b (head)`.
 - Коммит: `0082989` — Add user profile fields and database comments.
+
+## 2026-11-27 — Import Linter
+
+- Добавлен `import-linter` в dev-зависимости.
+- В `pyproject.toml` настроен контракт `Core does not depend on modules`.
+- Проверка `uv run lint-imports pyproject.toml` пройдена: `Contracts: 1 kept, 0 broken`.
+- Коммит: `ca5b3ae` — Add Import Linter with core independence contract.
