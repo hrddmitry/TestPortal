@@ -1,4 +1,4 @@
-﻿# WORKFLOW
+# WORKFLOW
 
 Этот документ описывает предпочтительный формат работы над TestPortal.
 Его нужно читать в начале нового чата, чтобы продолжить работу в том же стиле.
@@ -65,3 +65,16 @@
 - Группы могут включать людей вручную и формироваться по отделам/должностям.
 - Состав группы в чатах — отдельная логика модуля `chat`, реализуется позже.
 - Баллы и валюта не входят в модуль `users`; их реализация отложена.
+
+## Подтверждённая структура
+
+- Корень: `backend`, `frontend`, `docs`, `compose.yaml`, `.env`, `.env.example`.
+- Backend-код: `backend\src\backend`.
+- Конфигурация: `backend\src\backend\config.py`.
+- Точка входа: `backend\src\backend\main.py`.
+- Общие компоненты: `backend\src\backend\core`.
+- Функциональные модули: `backend\src\backend\modules\auth`, `backend\src\backend\modules\roles`, `backend\src\backend\modules\users`.
+- Миграции: `backend\migrations\versions`.
+- Frontend: `frontend`, стандартный каркас Vite + React + TypeScript.
+- Пустой каталог `backend\app` удалён как артефакт первоначального каркаса.
+- Цепочка миграций линейна; текущая ревизия — `5947759fb2ef`.
