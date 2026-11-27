@@ -143,3 +143,14 @@
   - `POST /api/groups/{id}/members/{user_id}` — 200;
   - `DELETE /api/groups/{id}/members/{user_id}` — 200.
 - Создана тестовая группа `Test Group`; добавление и удаление пользователя id 1 проверены.
+## 2026-11-27 — Минимальный фронтенд
+
+- Добавлен API-клиент `frontend/src/api.ts` с JWT-токеном в заголовке `Authorization`.
+- Добавлены типы `Group` и `LoginResponse` в `frontend/src/types.ts`.
+- Переделан `frontend/src/App.tsx`: экран входа и список групп.
+- Настроен CORS в FastAPI для `http://127.0.0.1:5173` и `http://localhost:5173`.
+- Проверено в браузере:
+  - вход пользователя `test@example.com`;
+  - получение JWT;
+  - загрузка `GET /api/groups`;
+  - отображение тестовой группы `Test Group`.
