@@ -1,95 +1,120 @@
 ﻿import { useState } from "react";
 import { apiRequest, setAccessToken } from "./api";
-import type { Group, LoginResponse } from "./types";
+import { MENU, SETTINGS_ITEM } from "./menu";
+import type { MenuItem } from "./menu";
+import type { LoginResponse } from "./types";
+import ComingSoon from "./pages/ComingSoon";
+import GroupsPage from "./pages/GroupsPage";
+import SettingsPage from "./pages/SettingsPage";
 
 export default function App() {
   const [email, setEmail] = useState("test@example.com");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const [groups, setGroups] = useState<Group[] | null>(null);
+  const [loggedIn, setLoggedIn] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [page, setPage] = useState("groups");
 
   async function login() {
     setLoading(true);
     setError(null);
-
     try {
       const response = await apiRequest<LoginResponse>("/api/auth/login", {
         method: "POST",
         body: JSON.stringify({ email, password }),
       });
-
       setAccessToken(response.access_token);
-      const groupList = await apiRequest<Group[]>("/api/groups");
-      setGroups(groupList);
-    } catch (requestError) {
-      setError(
-        requestError instanceof Error
-          ? requestError.message
-          : "Не удалось войти",
-      );
+      try {
+        await apiRequest("/api/roles");
+        setIsAdmin(true);
+      } catch {
+        setIsAdmin(false);
+      }
+      setLoggedIn(true);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Не удалось войти");
     } finally {
       setLoading(false);
     }
   }
 
-  return (
-    <main style={{ maxWidth: 640, margin: "48px auto", fontFamily: "sans-serif" }}>
-      <h1>TestPortal</h1>
+  function logout() {
+    setAccessToken(null);
+    setLoggedIn(false);
+    setIsAdmin(false);
+    setPassword("");
+    setPage("groups");
+  }
 
-      {!groups ? (
-        <section>
-          <h2>Вход</h2>
-
-          <label style={{ display: "block", marginBottom: 8 }}>
-            Email
-            <input
-              style={{ display: "block", width: "100%", padding: 8, marginTop: 4 }}
-              value={email}
-              onChange={(event) => setEmail(event.target.value)}
-            />
-          </label>
-
-          <label style={{ display: "block", marginBottom: 16 }}>
-            Пароль
-            <input
-              type="password"
-              style={{ display: "block", width: "100%", padding: 8, marginTop: 4 }}
-              value={password}
-              onChange={(event) => setPassword(event.target.value)}
-            />
-          </label>
-
-          <button
-            onClick={login}
-            disabled={loading}
-            style={{ padding: "10px 16px", cursor: "pointer" }}
-          >
+  if (!loggedIn) {
+    return (
+      <div className="login">
+        <div className="card">
+          <h1>TestPortal</h1>
+          <input value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email" />
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && login()}
+            placeholder="Пароль"
+          />
+          <button className="primary" onClick={login} disabled={loading}>
             {loading ? "Вход..." : "Войти"}
           </button>
+          {error && <p className="error">{error}</p>}
+        </div>
+      </div>
+    );
+  }
 
-          {error && (
-            <p style={{ color: "crimson" }}>{error}</p>
-          )}
-        </section>
-      ) : (
-        <section>
-          <h2>Группы</h2>
+  const allItems: MenuItem[] = [...MENU.flatMap((s) => s.items), SETTINGS_ITEM];
+  const current = allItems.find((i) => i.key === page);
 
-          {groups.length === 0 ? (
-            <p>Групп пока нет.</p>
-          ) : (
-            <ul>
-              {groups.map((group) => (
-                <li key={group.id}>
-                  <strong>{group.name}</strong>
-                  {group.description ? ` — ${group.description}` : ""}
-                </li>
-              ))}
-            </ul>
-          )}
-        </section>
-      )}
-    </main>
+  function renderPage() {
+    if (page === "groups") return <GroupsPage />;
+    if (page === "settings" && isAdmin) return <SettingsPage />;
+    return <ComingSoon title={current?.label ?? "Раздел"} />;
+  }
+
+  function button(item: MenuItem) {
+    return (
+      <button
+        key={item.key}
+        className={`nav-item${page === item.key ? " active" : ""}${item.ready ? "" : " soon"}`}
+        onClick={() => setPage(item.key)}
+      >
+        {item.label}
+      </button>
+    );
+  }
+
+  return (
+    <div className="shell">
+      <aside className="sidebar">
+        <div className="brand">TestPortal</div>
+        {MENU.map((section, index) => (
+          <div key={section.title ?? index}>
+            {section.title && <div className="nav-title">{section.title}</div>}
+            {section.items.map(button)}
+          </div>
+        ))}
+        {isAdmin && (
+          <div>
+            <div className="nav-title">Система</div>
+            {button(SETTINGS_ITEM)}
+          </div>
+        )}
+      </aside>
+
+      <div className="content">
+        <header className="topbar">
+          <h1>{current?.label}</h1>
+          <button onClick={logout}>Выйти</button>
+        </header>
+        <main>{renderPage()}</main>
+      </div>
+    </div>
   );
 }
